@@ -50,19 +50,39 @@ class _NotePageState extends State<NotePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.blueAccent,
-        title: const Text(
-          'Note Application',
-          style: TextStyle(
-            fontWeight: FontWeight.bold, 
-            fontSize: 20,
-            color: Colors.white,
+
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70),
+        child: AppBar(
+          title: const Text(
+            'Note Application',
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              shadows: [
+                Shadow(blurRadius: 6, color: Colors.black38, offset: Offset(1, 2)),
+              ],
+            ),
           ),
+          centerTitle: true,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF3366FF), Color(0xFF00CCFF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.vertical(
+                bottom: Radius.circular(20),
+              ),
+            ),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
         ),
-        centerTitle: true,
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -104,8 +124,8 @@ class _NotePageState extends State<NotePage> {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: addNote,
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add Note'),
+                        icon: const Icon(Icons.add, color: Color(0xFFFFFFFF),),
+                        label: const Text('Add Note', style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 15),),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blueAccent,
                           padding: const EdgeInsets.symmetric(vertical: 14),
@@ -154,7 +174,7 @@ class _NotePageState extends State<NotePage> {
                           child: ListTile(
                             contentPadding: const EdgeInsets.all(16),
                             title: Text(
-                              note.title ?? 'No Title',
+                              note.title,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -163,7 +183,7 @@ class _NotePageState extends State<NotePage> {
                             subtitle: Padding(
                               padding: const EdgeInsets.only(top: 6.0),
                               child: Text(
-                                note.content ?? 'No Content',
+                                note.content,
                                 style: const TextStyle(
                                   fontSize: 14,
                                   color: Colors.black87,
