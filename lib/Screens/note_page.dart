@@ -15,6 +15,13 @@ class _NotePageState extends State<NotePage> {
   final ContentController = TextEditingController();
   final DBHelper = DatabaseHelper();
   List<Note> notes = [];
+  final List<Color> noteColors = [
+  const Color(0xFFfaca24),
+  const Color(0xFF00b894),
+  const Color(0xFF092462),
+];
+
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -35,7 +42,6 @@ class _NotePageState extends State<NotePage> {
       content: ContentController.text,
     );
     await DBHelper.insertNote(note);
-    // Clear the text fields after adding the note
     TitleController.clear();
     ContentController.clear();
     refreshNotes();
@@ -49,13 +55,13 @@ class _NotePageState extends State<NotePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: const Color(0xFFF152e6a),
 
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
         child: AppBar(
           title: const Text(
-            'Note Application',
+            'My Notes',
             style: TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.bold,
@@ -65,21 +71,7 @@ class _NotePageState extends State<NotePage> {
               ],
             ),
           ),
-          centerTitle: true,
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF3366FF), Color(0xFF00CCFF)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.vertical(
-                bottom: Radius.circular(20),
-              ),
-            ),
-          ),
-          elevation: 0,
-          backgroundColor: Colors.transparent,
+          backgroundColor: const Color(0xFFF152e6a),
         ),
       ),
 
@@ -87,69 +79,6 @@ class _NotePageState extends State<NotePage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: TitleController,
-                      decoration: InputDecoration(
-                        labelText: 'Title',
-                        prefixIcon: const Icon(Icons.title),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: ContentController,
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        labelText: 'Content',
-                        prefixIcon: const Icon(Icons.notes),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: addNote,
-                        icon: const Icon(Icons.add, color: Color(0xFFFFFFFF),),
-                        label: const Text('Add Note', style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 15),),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueAccent,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            const Text(
-              'Your Notes',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                color: Colors.blueAccent,
-              ),
-            ),
             Expanded(
               child: notes.isEmpty
                   ? const Center(
@@ -161,43 +90,177 @@ class _NotePageState extends State<NotePage> {
                         ),
                       ),
                     )
-                  : ListView.builder(
+                  : GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.9,
+                      ),
                       itemCount: notes.length,
                       itemBuilder: (context, index) {
                         final note = notes[index];
                         return Card(
                           elevation: 3,
-                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          color: noteColors[index % noteColors.length],
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.all(16),
-                            title: Text(
-                              note.title,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            subtitle: Padding(
-                              padding: const EdgeInsets.only(top: 6.0),
-                              child: Text(
-                                note.content,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black87,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  note.title,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.white, // ensure text is visible
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              ),
-                            ),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => deleteNote(note.id!),
+                                const SizedBox(height: 6),
+                                Text(
+                                  note.content,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white, // visible on dark backgrounds
+                                  ),
+                                  maxLines: 4,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const Spacer(),
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.delete, color: Colors.white),
+                                    onPressed: () => deleteNote(note.id!),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         );
                       },
                     ),
+            ),
+          ],
+        ),
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+            ),
+            builder: (context) {
+              return Padding(
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 20,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: TitleController,
+                      decoration: InputDecoration(
+                        labelText: 'Title',
+                        prefixIcon: Icon(Icons.title),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    TextField(
+                      controller: ContentController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        labelText: 'Content',
+                        prefixIcon: const Icon(Icons.notes),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            TitleController.clear();
+                            ContentController.clear();
+                            Navigator.pop(context);
+                          },
+                          child: const Text("Cancel"),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            addNote();
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueAccent,
+                          ),
+                          child: const Text("Add"),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+        backgroundColor: Color(0xFF0c2b86),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30),),
+        child: const Icon(Icons.edit_outlined, color: Colors.white,),
+      ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFF092462),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(45),
+            topRight: Radius.circular(45),
+          ),
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          currentIndex: _selectedIndex,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white,
+          onTap: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.notifications_none_outlined),
+              label: "",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.search_outlined),
+              label: "",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.credit_card),
+              label: "",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings_outlined),
+              label: "",
             ),
           ],
         ),
