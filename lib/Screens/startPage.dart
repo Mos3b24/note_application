@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'note_page.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -26,7 +27,29 @@ class _CarouselPageState extends State<CarouselPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Carousel Slider
+
+          SizedBox(height: 50,),
+
+          Row(
+            children: [
+              Text(
+                context.locale.languageCode == 'en' ? "EN" : "AR",
+                style: const TextStyle(fontSize: 16),
+              ),
+              Switch(
+                value: context.locale.languageCode == 'ar',
+                onChanged: (value) {
+                  if (value) {
+                    context.setLocale(const Locale('ar'));
+                    } else {
+                      context.setLocale(const Locale('en'));
+                    }
+                    setState(() {}); // refresh text + switch
+                },
+              ),
+            ],
+          ),
+                
           Expanded(
             child: CarouselSlider.builder(
               carouselController: _carouselController,
@@ -61,7 +84,7 @@ class _CarouselPageState extends State<CarouselPage> {
             child: Column(
               children: [
                 Text(
-                  "Create Your Notes & Share With your team",
+                  'description'.tr(),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 30,
@@ -70,7 +93,8 @@ class _CarouselPageState extends State<CarouselPage> {
                   ),
                 ),
                 SizedBox(height: 15),
-                Text("For your Daily Tasks  Set Reminders",
+                Text(
+                  'description_2'.tr(),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20,
@@ -105,7 +129,7 @@ class _CarouselPageState extends State<CarouselPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 20),
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                 child: ElevatedButton(
                   onPressed: () {
                     if (_currentIndex < images.length - 1) {
@@ -128,7 +152,7 @@ class _CarouselPageState extends State<CarouselPage> {
                     ),
                   ),
                   child: Text(
-                    "Next",
+                    'next'.tr(),
                     style: TextStyle(fontSize: 20, color: Colors.white),
                   ),
                 ),

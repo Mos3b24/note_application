@@ -1,6 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:note_application/Models/note.dart';
 import 'package:note_application/services/database_helper.dart';
+import 'package:note_application/Screens/settings_page.dart';
+
 
 class NotePage extends StatefulWidget {
   const NotePage({super.key});
@@ -16,10 +19,10 @@ class _NotePageState extends State<NotePage> {
   final DBHelper = DatabaseHelper();
   List<Note> notes = [];
   final List<Color> noteColors = [
-  const Color(0xFFfaca24),
-  const Color(0xFF00b894),
-  const Color(0xFF092462),
-];
+    const Color(0xFFfaca24),
+    const Color(0xFF00b894),
+    const Color(0xFF092462),
+  ];
 
   int _selectedIndex = 0;
 
@@ -56,18 +59,21 @@ class _NotePageState extends State<NotePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF152e6a),
-
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
         child: AppBar(
-          title: const Text(
-            'My Notes',
-            style: TextStyle(
+          title: Text(
+            'app_title'.tr(),
+            style: const TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.bold,
               color: Colors.white,
               shadows: [
-                Shadow(blurRadius: 6, color: Colors.black38, offset: Offset(1, 2)),
+                Shadow(
+                  blurRadius: 6,
+                  color: Colors.black38,
+                  offset: Offset(1, 2),
+                ),
               ],
             ),
           ),
@@ -81,17 +87,18 @@ class _NotePageState extends State<NotePage> {
           children: [
             Expanded(
               child: notes.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
-                        'No Notes Yet!',
-                        style: TextStyle(
+                        'no_notes'.tr(),
+                        style: const TextStyle(
                           fontSize: 16,
                           color: Colors.grey,
                         ),
                       ),
                     )
                   : GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
@@ -116,7 +123,7 @@ class _NotePageState extends State<NotePage> {
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                    color: Colors.white, // ensure text is visible
+                                    color: Colors.white,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -126,7 +133,7 @@ class _NotePageState extends State<NotePage> {
                                   note.content,
                                   style: const TextStyle(
                                     fontSize: 14,
-                                    color: Colors.white, // visible on dark backgrounds
+                                    color: Colors.white,
                                   ),
                                   maxLines: 4,
                                   overflow: TextOverflow.ellipsis,
@@ -135,8 +142,10 @@ class _NotePageState extends State<NotePage> {
                                 Align(
                                   alignment: Alignment.bottomRight,
                                   child: IconButton(
-                                    icon: const Icon(Icons.delete, color: Colors.white),
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.white),
                                     onPressed: () => deleteNote(note.id!),
+                                    tooltip: 'delete'.tr(),
                                   ),
                                 ),
                               ],
@@ -172,26 +181,26 @@ class _NotePageState extends State<NotePage> {
                     TextField(
                       controller: TitleController,
                       decoration: InputDecoration(
-                        labelText: 'Title',
-                        prefixIcon: Icon(Icons.title),
+                        labelText: 'title'.tr(),
+                        prefixIcon: const Icon(Icons.title),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     TextField(
                       controller: ContentController,
                       maxLines: 3,
                       decoration: InputDecoration(
-                        labelText: 'Content',
+                        labelText: 'content'.tr(),
                         prefixIcon: const Icon(Icons.notes),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -201,7 +210,7 @@ class _NotePageState extends State<NotePage> {
                             ContentController.clear();
                             Navigator.pop(context);
                           },
-                          child: const Text("Cancel"),
+                          child: Text("cancel".tr()),
                         ),
                         ElevatedButton(
                           onPressed: () {
@@ -211,7 +220,7 @@ class _NotePageState extends State<NotePage> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blueAccent,
                           ),
-                          child: const Text("Add"),
+                          child: Text("add".tr()),
                         ),
                       ],
                     ),
@@ -221,10 +230,13 @@ class _NotePageState extends State<NotePage> {
             },
           );
         },
-        backgroundColor: Color(0xFF0c2b86),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30),),
-        child: const Icon(Icons.edit_outlined, color: Colors.white,),
+        backgroundColor: const Color(0xFF0c2b86),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: const Icon(Icons.edit_outlined, color: Colors.white),
       ),
+
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Color(0xFF092462),
@@ -244,23 +256,31 @@ class _NotePageState extends State<NotePage> {
             setState(() {
               _selectedIndex = index;
             });
+            if (index == 3) { // settings tab
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            }
           },
-          items: const [
+
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.notifications_none_outlined),
+              icon: const Icon(Icons.notifications_none_outlined),
               label: "",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.search_outlined),
+              icon: const Icon(Icons.search_outlined),
               label: "",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.credit_card),
+              icon: const Icon(Icons.credit_card),
               label: "",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.settings_outlined),
-              label: "",
+              icon: const Icon(Icons.settings_outlined),
+              label: ""
+              
             ),
           ],
         ),
